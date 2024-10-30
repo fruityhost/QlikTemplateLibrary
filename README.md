@@ -17,7 +17,7 @@ These sections can be **imported directly into your Qlik Sense app** using the *
 
 ---
 
-### 2. **Calendar**
+### 2. **Master Calendar**
    A manually customizable calendar script for your Qlik Sense app. This allows you to define how dates are parsed and structured based on your organization’s needs.
 
    **Features**:
