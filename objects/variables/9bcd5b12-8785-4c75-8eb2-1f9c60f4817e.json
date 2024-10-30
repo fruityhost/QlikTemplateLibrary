@@ -1,0 +1,15 @@
+{
+  "qInfo": {
+    "qId": "9bcd5b12-8785-4c75-8eb2-1f9c60f4817e",
+    "qType": "variable"
+  },
+  "qMetaDef": {},
+  "qName": "vPreviousYear",
+  "qNumberPresentation": {
+    "qType": "U",
+    "qnDec": 10,
+    "qUseThou": 0
+  },
+  "qDefinition": "Year(Today()) - 1",
+  "qIsScriptCreated": true
+}

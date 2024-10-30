@@ -1,0 +1,24 @@
+{
+  "qInfo": {
+    "qId": "UBXBYbx",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Sales Growth Rate",
+    "qDef": "(Sum(Sales) - Sum({<Year={\"$(vPreviousYear)\"}>} Sales)) / Sum({<Year={\"$(vPreviousYear)\"}>} Sales)",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "U",
+      "qnDec": 10,
+      "qUseThou": 0
+    },
+    "coloring": {}
+  },
+  "qMetaDef": {
+    "title": "Sales Growth Rate",
+    "description": "",
+    "tags": []
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "qInfo": {
+    "qId": "NTrVCQU",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Previous Month Sales",
+    "qDef": "Sum({<Month={\"=$(=Month(AddMonths(Today(), -1))\"}>} Sales)",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "U",
+      "qnDec": 10,
+      "qUseThou": 0
+    },
+    "coloring": {}
+  },
+  "qMetaDef": {
+    "title": "Previous Month Sales",
+    "description": "",
+    "tags": []
+  }
+}

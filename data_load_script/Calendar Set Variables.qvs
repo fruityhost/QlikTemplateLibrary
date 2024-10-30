@@ -1,0 +1,257 @@
+///$tab Calendar Set Variables
+IF $(Qvc.Calendar.v.CreateSetVariables) THEN	// If SA variables requested,
+
+// Mapping table that will be used to translate escaped special chars
+[_qvctemp.Calendar.EscapeCharsMap]:
+MAPPING LOAD * INLINE [
+from, to
+@,$
+|,'
+]
+;
+
+// We don't want spaces in the SetAnalysis varable names. 
+// Replace spaces with _.
+LET _fieldPrefix = replace('$(_fieldPrefix)',' ','_');
+// Create an indirect name for the runtime variable that will compute the selected calendar fields.
+SET _Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix) = _Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix);
+//_Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix)
+
+
+// Create a modifer list of Calendar fields to be used to clear all calendar selections
+SET _vClearFieldList=;
+FOR _qvctemp.i = 1 to NoOfFields('$(_tableName)')
+	LET _vClearFieldList = '$(_vClearFieldList)' & '[' & FieldName($(_qvctemp.i), '$(_tableName)') & ']=,';
+NEXT _qvctemp.i
+SET _qvctemp.i=;
+
+//===
+// Create a variable expression that will build a modifier list that reflects all current calendar selections
+//
+SET _Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix)='=';		// Init variable
+SET _qvctemp.vConcat =;			// Set concat char to empty for first time through loop
+FOR _qvctemp.i = 1 to NoOfFields('$(_tableName)')		// Loop through all fields in Calendar table
+	// Get next fieldname in var
+	LET _qvctemp.vFname = FieldName($(_qvctemp.i), '$(_tableName)');
+	// Add field to list
+	LET _Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix) = '$(_Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix))'
+	& '$(_qvctemp.vConcat) if(GetSelectedCount([$(_qvctemp.vFname)])>0, |,[$(_qvctemp.vFname)]={"|	& GetFieldSelections([$(_qvctemp.vFname)],|","|,1000) &|"}|, ||)' & chr(10);
+	SET _qvctemp.vConcat ='&';		// Set concat char for next time through loop
+NEXT _qvctemp.i
+SET _qvctemp.i=;
+SET _qvctemp.vFname=;
+SET _qvctemp.vConcat=;
+
+// Unescape special characters
+LET _Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix) = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+	'$(_Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix))'
+)
+;
+
+// Create a convienence variable we will use to form the variables
+SET _qvctemp.vMaxModifier = 'Max({1<$(_f_DateIsFuture)={0},_Qvc.DummyField=@(_Qvc.Calendar.v.SelectedFieldList_$(_fieldPrefix))>}';	
+
+IF len('$(Qvc.Global.Extension.Directory)')> 0 THEN
+	LET _qvctemp.v.Include.ExtSetVariables = replace(
+	'@(Include=@(Qvc.Global.Extension.Directory)\@(Qvc.Calendar.v.ExtSetVariables))'
+	,'@','$');
+ELSE 
+	SET _qvctemp.v.Include.ExtSetVariables=;	
+ENDIF	
+
+REM Create the Set Analysis variables;
+
+
+// Year To Date
+Let $(_fieldPrefix)vSetYTDModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_DateSerial) = {"<=@(=$(_qvctemp.vMaxModifier)$(_f_DateSerial)))"},
+$(_fYear) = {"@(=$(_qvctemp.vMaxModifier)$(_fYear)))"}'
+);	
+
+Let $(_fieldPrefix)vSetYTD = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetYTDModifier)
+>}'
+);	
+
+// Previous Year Year To Date
+Let $(_fieldPrefix)vSetPreviousYearYTDModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_DateSerial) = {"<=@(=num(AddMonths($(_qvctemp.vMaxModifier) $(_f_DateSerial)), -12)))"},
+$(_fYear) = {"@(=$(_qvctemp.vMaxModifier)$(_fYear))-1)"}'
+);
+
+Let $(_fieldPrefix)vSetPreviousYearYTD =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousYearYTDModifier)
+>}'
+);	
+	
+	
+// Quarter To Date																		
+Let $(_fieldPrefix)vSetQTDModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_DateSerial) = {"<=@(=$(_qvctemp.vMaxModifier) $(_f_DateSerial)))"},
+$(_f_QuarterSerial) =  {@(=$(_qvctemp.vMaxModifier) $(_f_QuarterSerial)))}' 
+);
+
+Let $(_fieldPrefix)vSetQTD = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetQTDModifier)
+>}'
+);
+
+// Previous Year Quarter To Date
+Let $(_fieldPrefix)vSetPreviousYearQTDModifier =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_QuarterSerial) =  {@(=Max($(_f_QuarterSerial)) - 4)}, 
+$(_f_DateSerial) =  {"<=@(=num(AddMonths(Max($(_f_DateSerial)), -12)))"}'
+);
+
+Let $(_fieldPrefix)vSetPreviousYearQTD =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousYearQTDModifier)
+>}'
+);
+
+	
+// Previous Quarter To Date
+Let $(_fieldPrefix)vSetPreviousQuarterModifier =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_QuarterSerial) =  {@(=$(_qvctemp.vMaxModifier) $(_f_QuarterSerial)) - 1)}'
+);
+
+Let $(_fieldPrefix)vSetPreviousQuarter =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousQuarterModifier)
+>}'
+);				
+
+
+// Month To Date
+Let $(_fieldPrefix)vSetMTDModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)))},
+$(_fDay) = {"<=@(=Day($(_qvctemp.vMaxModifier) $(_f_DateSerial))))"}'
+);
+
+Let $(_fieldPrefix)vSetMTD = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetMTDModifier)
+>}'
+);
+
+// Previous Year Month To Date
+Let $(_fieldPrefix)vSetPreviousYearMTDModifier =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial))-12)},
+$(_fDay) = {"<=@(=Day($(_qvctemp.vMaxModifier) $(_f_DateSerial))))"}'
+);
+
+Let $(_fieldPrefix)vSetPreviousYearMTD =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousYearMTDModifier)
+>}'
+);
+
+
+// Previous Month To Date
+Let $(_fieldPrefix)vSetPreviousMonthMTDModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)) - 1)}, 
+$(_fDay) = {"<=@(=Day($(_qvctemp.vMaxModifier) $(_f_DateSerial))))"}'
+);
+
+Let $(_fieldPrefix)vSetPreviousMonthMTD =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousMonthMTDModifier)
+>}'
+);
+
+// Mark Miller (RHS) 2/15/2016 - Previous Full Month
+Let $(_fieldPrefix)vSetPreviousFULLMonthModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)) - 1)}'
+);
+
+Let $(_fieldPrefix)vSetPreviousFULLMonth =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousFULLMonthModifier)
+>}'
+);
+
+// Mark Miller (RHS) 2/15/2016 - Previous N Full Month
+// Example usage:
+// Count($(Annual_vSetPreviousFULLMonthN(3)) orderNo)	// Count # orders in entire month 3 months prior
+Let $(_fieldPrefix)vSetPreviousFULLMonthNModifier = 
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)) - $1)}'
+);
+
+Let $(_fieldPrefix)vSetPreviousFULLMonthN =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetPreviousFULLMonthNModifier($1))
+>}'
+);
+
+// Mark Miller (RHS) 2/15/2016 - Previous N Full Months
+// Example usage:
+// Count($(Annual_vSetRollingN(3)) orderNo)	// Count # orders for prior 3 months
+Let $(_fieldPrefix)vSetRollingNModifier =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {">=@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)) - ($1 - 1))<=@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)))"}'
+);
+
+Let $(_fieldPrefix)vSetRollingN =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetRollingNModifier($1))
+>}'
+);
+
+// Rolling 12 Months
+Let $(_fieldPrefix)vSetRolling12Modifier =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'$(_vClearFieldList)
+$(_f_MonthSerial) = {">=@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)) - 11)<=@(=$(_qvctemp.vMaxModifier) $(_f_MonthSerial)))"}'
+);
+
+Let $(_fieldPrefix)vSetRolling12 =
+MapSubString('_qvctemp.Calendar.EscapeCharsMap',
+'{$<
+@($(_fieldPrefix)vSetRolling12Modifier)
+>}'
+);
+
+// Include possible extension to create additional Set variables.
+ $(_qvctemp.v.Include.ExtSetVariables);
+
+// Clean temp variables
+SET _vClearFieldList=;
+SET _qvctemp.vMaxModifier=;
+SET _qvctemp.v.Include.ExtSetVariables=;
+
+ENDIF		// End of Generating Calendar Set Variables

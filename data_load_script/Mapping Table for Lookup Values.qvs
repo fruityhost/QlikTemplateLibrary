@@ -1,0 +1,17 @@
+///$tab Mapping Table for Lookup Values
+//Mapping tables help in replacing or enriching fields (e.g., replacing numeric codes with labels).
+
+CountryMap:
+MAPPING LOAD  
+    CountryCode, CountryName
+INLINE [
+    US, United States
+    DE, Germany
+    KZ, Kazakhstan
+];
+
+Customers:
+LOAD
+    CustomerID,
+    ApplyMap('CountryMap', CountryCode, 'Unknown') AS Country
+FROM CustomerData.qvd (qvd);

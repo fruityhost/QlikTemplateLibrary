@@ -1,0 +1,18 @@
+///$tab Inline Data Table
+SET vToday = Today();
+SET vPreviousYear = Year(Today()) - 1;
+
+SalesData:
+LOAD * INLINE [
+    Date, Product, Sales, Year, Month
+    2023-01-15, ProductA, 500, 2023, 1
+    2023-02-10, ProductB, 700, 2023, 2
+    2023-03-12, ProductC, 900, 2023, 3
+    2023-03-15, ProductD, 300, 2023, 3
+    2023-04-08, ProductA, 600, 2023, 4
+    2022-01-10, ProductB, 550, 2022, 1
+    2022-02-05, ProductC, 650, 2022, 2
+    2022-03-14, ProductA, 800, 2022, 3
+    2022-04-20, ProductD, 400, 2022, 4
+    2021-12-20, ProductB, 1000, 2021, 12
+];

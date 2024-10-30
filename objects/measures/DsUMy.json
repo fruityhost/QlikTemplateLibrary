@@ -1,0 +1,24 @@
+{
+  "qInfo": {
+    "qId": "DsUMy",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Top N Products by Sales",
+    "qDef": "Sum({<Product={\"=Rank(Sum(Sales)) <= 10\"}>} Sales)",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "U",
+      "qnDec": 10,
+      "qUseThou": 0
+    },
+    "coloring": {}
+  },
+  "qMetaDef": {
+    "title": "Top N Products by Sales",
+    "description": "",
+    "tags": []
+  }
+}

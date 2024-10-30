@@ -1,0 +1,24 @@
+{
+  "qInfo": {
+    "qId": "tfEks",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Current vs Prev Year Comparison",
+    "qDef": "Sum({<Year={\"$(=Max(Year))\"}>} Sales) / Sum({<Year={\"$(=Max(Year)-1)\"}>} Sales) - 1",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "U",
+      "qnDec": 10,
+      "qUseThou": 0
+    },
+    "coloring": {}
+  },
+  "qMetaDef": {
+    "title": "Current vs Prev Year Comparison",
+    "description": "",
+    "tags": []
+  }
+}

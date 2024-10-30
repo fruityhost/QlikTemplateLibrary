@@ -1,0 +1,24 @@
+{
+  "qInfo": {
+    "qId": "NyxnSj",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "YTD Sales",
+    "qDef": "Sum({<Date={\"<=$(vToday)\"}>} Sales)\r\n",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "U",
+      "qnDec": 10,
+      "qUseThou": 0
+    },
+    "coloring": {}
+  },
+  "qMetaDef": {
+    "title": "YTD Sales",
+    "description": "",
+    "tags": []
+  }
+}

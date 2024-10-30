@@ -1,0 +1,19 @@
+///$tab Section Access Template
+//hard-code section access script
+
+SECTION ACCESS;
+LOAD * INLINE [
+    ACCESS, USERID, REDUCTION, OMIT
+    ADMIN, DOMAIN\admin, *, 
+    USER, DOMAIN\user1, 1001, Revenue
+    USER, DOMAIN\user2, 1002, 
+];
+
+SECTION APPLICATION;
+LOAD * INLINE [
+    REDUCTION, SalesRegion, ProductLine, Revenue
+    1001, "North", "Electronics", 5000
+    1002, "South", "Clothing", 3000
+    1001, "North", "Furniture", 2000
+    1002, "South", "Footwear", 1500
+];

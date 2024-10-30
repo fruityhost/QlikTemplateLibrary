@@ -1,0 +1,22 @@
+///$tab Calendar Configuration
+REM Cleanup any leftover include variables. They cause problems in Sense;
+SET _qvctemp.v.Include.ExtFields=;
+SET _qvctemp.v.Include.ExtSetVariables=;
+// Pre QVC V11 var
+SET _qvctemp.v.IncludeExtension=;
+
+REM Configuration variables for Qvc.Calendar;
+// Will we create Set Analysis Calendar variables?
+SET Qvc.Calendar.v.CreateSetVariables = -1;
+
+SET Qvc.Calendar.v.Field.Date=Date;
+SET Qvc.Calendar.v.Field.Day=Day;
+SET Qvc.Calendar.v.Field.Weekday=Weekday;
+SET Qvc.Calendar.v.Field.Year=Year;
+SET Qvc.Calendar.v.Field.Month=Month;
+SET Qvc.Calendar.v.Field.YearMonth=Year-Month;
+SET Qvc.Calendar.v.Field.Quarter=Quarter;
+SET Qvc.Calendar.v.Field.YearQuarter=Year-Quarter;
+
+// Name of the optional script file that defines additonal Calendar fields.
+SET Qvc.Calendar.v.ExtFields=CalendarExtFields.qvs;
